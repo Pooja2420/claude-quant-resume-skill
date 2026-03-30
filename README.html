@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>claude-quant-resume-skill</title>
+<style>
+  :root {
+    --bg: #0d1117; --bg2: #161b22; --bg3: #21262d;
+    --border: #30363d; --text: #e6edf3; --muted: #8b949e;
+    --purple: #7c3aed; --purple-light: #a78bfa; --purple-bg: #1e1030;
+    --teal: #0d9488; --teal-light: #5eead4; --teal-bg: #0d2420;
+    --amber: #d97706; --amber-light: #fbbf24; --amber-bg: #2d1f06;
+    --green: #16a34a; --green-light: #4ade80; --green-bg: #0d2416;
+    --blue: #2563eb; --blue-light: #60a5fa; --blue-bg: #0d1e3d;
+    --coral: #e11d48; --coral-light: #fb7185; --coral-bg: #2d0a16;
+    --radius: 8px; --radius-lg: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); line-height: 1.7; padding: 0 16px; }
+  .container { max-width: 900px; margin: 0 auto; padding: 48px 0 80px; }
+
+  /* Hero */
+  .hero { text-align: center; padding: 48px 0 40px; }
+  .hero h1 { font-size: 2.4rem; font-weight: 700; letter-spacing: -0.03em; background: linear-gradient(135deg, #a78bfa 0%, #5eead4 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 12px; }
+  .hero p { color: var(--muted); font-size: 1.05rem; max-width: 540px; margin: 0 auto 24px; }
+  .badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .badge { font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; border: 1px solid; }
+  .badge-purple { background: var(--purple-bg); color: var(--purple-light); border-color: var(--purple); }
+  .badge-teal   { background: var(--teal-bg);   color: var(--teal-light);   border-color: var(--teal); }
+  .badge-amber  { background: var(--amber-bg);  color: var(--amber-light);  border-color: var(--amber); }
+  .badge-green  { background: var(--green-bg);  color: var(--green-light);  border-color: var(--green); }
+
+  /* Section titles */
+  h2 { font-size: 1.35rem; font-weight: 600; margin: 48px 0 20px; color: var(--text); display: flex; align-items: center; gap: 10px; }
+  h2::before { content: ''; display: block; width: 3px; height: 1.2em; border-radius: 2px; background: linear-gradient(180deg, #a78bfa, #5eead4); }
+  h3 { font-size: 1rem; font-weight: 600; margin: 20px 0 10px; color: var(--text); }
+
+  /* Cards grid */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 20px 0; }
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px; }
+  .card-icon { font-size: 22px; margin-bottom: 10px; }
+  .card h3 { font-size: 0.9rem; margin: 0 0 6px; }
+  .card p { font-size: 0.82rem; color: var(--muted); margin: 0; line-height: 1.5; }
+  .card.accent-purple { border-color: var(--purple); background: var(--purple-bg); }
+  .card.accent-teal   { border-color: var(--teal);   background: var(--teal-bg); }
+  .card.accent-amber  { border-color: var(--amber);  background: var(--amber-bg); }
+  .card.accent-green  { border-color: var(--green);  background: var(--green-bg); }
+
+  /* Modes table */
+  .modes { display: grid; grid-template-columns: auto auto 1fr; gap: 0; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+  .mode-header { background: var(--bg3); padding: 10px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+  .mode-row { display: contents; }
+  .mode-row > div { padding: 12px 16px; font-size: 13px; border-top: 1px solid var(--border); }
+  .mode-name { font-weight: 700; font-family: 'SF Mono', monospace; }
+  .mode-name.m-write  { color: var(--teal-light); }
+  .mode-name.m-opt    { color: var(--blue-light); }
+  .mode-name.m-jd     { color: var(--amber-light); }
+  .mode-name.m-score  { color: var(--green-light); }
+  .mode-trigger { color: var(--muted); font-size: 12px; }
+  .mode-desc { color: var(--text); }
+
+  /* Architecture diagram */
+  .arch { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; overflow-x: auto; }
+
+  /* Flow diagram boxes */
+  .flow { position: relative; }
+  .flow svg { width: 100%; height: auto; }
+
+  /* Code block */
+  pre { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; overflow-x: auto; font-size: 13px; font-family: 'SF Mono', 'Fira Code', monospace; color: #e6edf3; margin: 12px 0; }
+  code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; background: var(--bg3); padding: 2px 6px; border-radius: 4px; color: var(--teal-light); }
+
+  /* Steps list */
+  .steps { counter-reset: step; display: flex; flex-direction: column; gap: 0; }
+  .step { display: flex; gap: 16px; padding: 20px 0; border-bottom: 1px solid var(--border); }
+  .step:last-child { border-bottom: none; }
+  .step-num { counter-increment: step; min-width: 36px; height: 36px; border-radius: 50%; background: var(--purple-bg); border: 1px solid var(--purple); color: var(--purple-light); font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .step-content h3 { margin: 4px 0 6px; }
+  .step-content p { font-size: 13px; color: var(--muted); margin: 0; }
+
+  /* Company logos section */
+  .companies { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+  .company { background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 6px 14px; font-size: 12px; font-weight: 600; color: var(--muted); }
+
+  /* Divider */
+  hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+  /* Review loop callout */
+  .callout { background: var(--purple-bg); border: 1px solid var(--purple); border-radius: var(--radius-lg); padding: 18px 20px; margin: 20px 0; }
+  .callout h3 { color: var(--purple-light); margin: 0 0 8px; font-size: 0.95rem; }
+  .callout p { font-size: 13px; color: var(--muted); margin: 0; }
+  .callout ul { font-size: 13px; color: var(--muted); padding-left: 18px; margin: 8px 0 0; }
+  .callout li { margin-bottom: 4px; }
+
+  /* Footer */
+  .footer { margin-top: 64px; text-align: center; font-size: 12px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1>claude-quant-resume-skill</h1>
+    <p>A Claude skill that writes ATS-optimized resumes for quant finance and tech roles — with a built-in review loop, JD-mirror mode, and zero fabrication.</p>
+    <div class="badges">
+      <span class="badge badge-purple">Apache 2.0</span>
+      <span class="badge badge-teal">Claude Skills</span>
+      <span class="badge badge-amber">ATS Score 95+</span>
+      <span class="badge badge-green">Zero Fabrication</span>
+    </div>
+  </div>
+
+  <!-- What it does -->
+  <h2>What it does</h2>
+  <div class="cards">
+    <div class="card accent-purple">
+      <div class="card-icon">🎯</div>
+      <h3>JD-Mirror Mode</h3>
+      <p>Ingests a job posting, extracts required keywords, and rewires every bullet to match ATS scoring verbatim — without fabricating.</p>
+    </div>
+    <div class="card accent-teal">
+      <div class="card-icon">🔍</div>
+      <h3>3-Pass Review Loop</h3>
+      <p>ATS gate → human voice check → hiring manager scan. Runs internally before any output so the resume reads like a person wrote it.</p>
+    </div>
+    <div class="card accent-amber">
+      <div class="card-icon">🚫</div>
+      <h3>Zero Fabrication</h3>
+      <p>Hard rule — refuses to invent skills, titles, years of experience, or metrics. Every fact is traceable to what you provided.</p>
+    </div>
+    <div class="card accent-green">
+      <div class="card-icon">📄</div>
+      <h3>DOCX Output</h3>
+      <p>ATS-safe Word file on request. No tables, no columns, correct bullet format — won't fail Workday or Greenhouse parsers.</p>
+    </div>
+  </div>
+
+  <!-- Target companies -->
+  <h2>Target companies</h2>
+  <div class="companies">
+    <span class="company">Citadel</span>
+    <span class="company">Jane Street</span>
+    <span class="company">IMC Trading</span>
+    <span class="company">Two Sigma</span>
+    <span class="company">DE Shaw</span>
+    <span class="company">Nasdaq</span>
+    <span class="company">Amazon</span>
+    <span class="company">Google</span>
+    <span class="company">Meta</span>
+    <span class="company">Microsoft</span>
+    <span class="company">Apple</span>
+    <span class="company">Netflix</span>
+    <span class="company">Walmart</span>
+    <span class="company">CVS</span>
+  </div>
+
+  <!-- Modes -->
+  <h2>Four modes</h2>
+  <div class="modes">
+    <div class="mode-header">Mode</div>
+    <div class="mode-header">Trigger</div>
+    <div class="mode-header">Use when</div>
+
+    <div class="mode-row">
+      <div class="mode-name m-write">WRITE</div>
+      <div class="mode-trigger">"write my resume"</div>
+      <div class="mode-desc">Starting from scratch</div>
+    </div>
+    <div class="mode-row">
+      <div class="mode-name m-opt">OPTIMIZE</div>
+      <div class="mode-trigger">"improve my resume" + paste</div>
+      <div class="mode-desc">Existing resume needs ATS lift</div>
+    </div>
+    <div class="mode-row">
+      <div class="mode-name m-jd">JD-MIRROR</div>
+      <div class="mode-trigger">Paste a job description URL</div>
+      <div class="mode-desc">Tailoring to one specific role — highest ATS score</div>
+    </div>
+    <div class="mode-row">
+      <div class="mode-name m-score">SCORE</div>
+      <div class="mode-trigger">"score my resume"</div>
+      <div class="mode-desc">Auditing without rewriting — get a per-category report</div>
+    </div>
+  </div>
+
+  <!-- Architecture -->
+  <h2>Architecture</h2>
+  <div class="arch">
+    <svg viewBox="0 0 820 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:820px;display:block;margin:0 auto">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="#8b949e" stroke-width="1.5" stroke-linecap="round"/>
+        </marker>
+        <marker id="arr-p" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="#a78bfa" stroke-width="1.5" stroke-linecap="round"/>
+        </marker>
+        <marker id="arr-t" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="#5eead4" stroke-width="1.5" stroke-linecap="round"/>
+        </marker>
+      </defs>
+
+      <!-- User input box -->
+      <rect x="20" y="170" width="130" height="56" rx="8" fill="#1e1030" stroke="#7c3aed" stroke-width="1"/>
+      <text x="85" y="195" text-anchor="middle" fill="#a78bfa" font-size="12" font-weight="600" font-family="sans-serif">User Input</text>
+      <text x="85" y="213" text-anchor="middle" fill="#8b949e" font-size="11" font-family="sans-serif">Profile + JD (optional)</text>
+
+      <!-- Mode router -->
+      <rect x="200" y="158" width="120" height="80" rx="8" fill="#21262d" stroke="#30363d" stroke-width="1"/>
+      <text x="260" y="190" text-anchor="middle" fill="#e6edf3" font-size="12" font-weight="600" font-family="sans-serif">Mode Router</text>
+      <text x="260" y="208" text-anchor="middle" fill="#8b949e" font-size="10" font-family="sans-serif">WRITE / OPTIMIZE</text>
+      <text x="260" y="223" text-anchor="middle" fill="#8b949e" font-size="10" font-family="sans-serif">JD-MIRROR / SCORE</text>
+
+      <!-- Arrow: user → router -->
+      <line x1="150" y1="198" x2="198" y2="198" stroke="#8b949e" stroke-width="1" marker-end="url(#arr)"/>
+
+      <!-- JD Mirror box -->
+      <rect x="370" y="60" width="140" height="56" rx="8" fill="#2d1f06" stroke="#d97706" stroke-width="1"/>
+      <text x="440" y="84" text-anchor="middle" fill="#fbbf24" font-size="12" font-weight="600" font-family="sans-serif">JD-Mirror</text>
+      <text x="440" y="102" text-anchor="middle" fill="#8b949e" font-size="10" font-family="sans-serif">Keyword extraction + match</text>
+
+      <!-- Keyword ref box -->
+      <rect x="370" y="158" width="140" height="56" rx="8" fill="#0d2420" stroke="#0d9488" stroke-width="1"/>
+      <text x="440" y="182" text-anchor="middle" fill="#5eead4" font-size="12" font-weight="600" font-family="sans-serif">ATS Keywords</text>
+      <text x="440" y="200" text-anchor="middle" fill="#8b949e" font-size="10" font-family="sans-serif">references/ats-keywords.md</text>
+
+      <!-- Banned phrases box -->
+      <rect x="370" y="256" width="140" height="56" rx="8" fill="#2d0a16" stroke="#e11d48" stroke-width="1"/>
+      <text x="440" y="280" text-anchor="middle" fill="#fb7185" font-size="12" font-weight="600" font-family="sans-serif">Banned Phrases</text>
+      <text x="440" y="298" text-anchor="middle" fill="#8b949e" font-size="10" font-family="sans-serif">references/banned-phrases.md</text>
+
+      <!-- Arrows: router → refs -->
+      <path d="M320 178 L368 88" stroke="#d97706" stroke-width="1" fill="none" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+      <line x1="320" y1="198" x2="368" y2="186" stroke="#0d9488" stroke-width="1" fill="none" marker-end="url(#arr)"/>
+      <path d="M320 218 L368 284" stroke="#e11d48" stroke-width="1" fill="none" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+
+      <!-- Review loop box -->
+      <rect x="565" y="120" width="150" height="136" rx="8" fill="#1e1030" stroke="#7c3aed" stroke-width="1.5"/>
+      <text x="640" y="145" text-anchor="middle" fill="#a78bfa" font-size="12" font-weight="700" font-family="sans-serif">3-Pass Review</text>
+      <text x="640" y="166" text-anchor="middle" fill="#8b949e" font-size="10" font-family="sans-serif">① ATS Gate</text>
+      <text x="640" y="183" text-anchor="middle" fill="#8b949e" font-size="10" font-family="sans-serif">② Human Voice Check</text>
+      <text x="640" y="200" text-anchor="middle" fill="#8b949e" font-size="10" font-family="sans-serif">③ Hiring Manager Scan</text>
+      <text x="640" y="222" text-anchor="middle" fill="#a78bfa" font-size="10" font-style="italic" font-family="sans-serif">Revise if any pass fails</text>
+      <text x="640" y="239" text-anchor="middle" fill="#8b949e" font-size="10" font-family="sans-serif">Re-run all 3 passes</text>
+
+      <!-- Arrows: refs → review -->
+      <path d="M510 88 L563 155" stroke="#d97706" stroke-width="1" fill="none" marker-end="url(#arr)"/>
+      <line x1="510" y1="186" x2="563" y2="186" stroke="#0d9488" stroke-width="1" fill="none" marker-end="url(#arr)"/>
+      <path d="M510 284 L563 222" stroke="#e11d48" stroke-width="1" fill="none" marker-end="url(#arr)"/>
+
+      <!-- Output box -->
+      <rect x="565" y="310" width="150" height="56" rx="8" fill="#0d2416" stroke="#16a34a" stroke-width="1"/>
+      <text x="640" y="334" text-anchor="middle" fill="#4ade80" font-size="12" font-weight="600" font-family="sans-serif">Output</text>
+      <text x="640" y="352" text-anchor="middle" fill="#8b949e" font-size="10" font-family="sans-serif">Plain text or .docx</text>
+
+      <!-- Arrow: review → output -->
+      <line x1="640" y1="256" x2="640" y2="308" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arr-p)"/>
+
+      <!-- Company signals box -->
+      <rect x="370" y="350" width="140" height="56" rx="8" fill="#0d1e3d" stroke="#2563eb" stroke-width="1"/>
+      <text x="440" y="374" text-anchor="middle" fill="#60a5fa" font-size="12" font-weight="600" font-family="sans-serif">Company Signals</text>
+      <text x="440" y="392" text-anchor="middle" fill="#8b949e" font-size="10" font-family="sans-serif">references/company-jd-signals.md</text>
+
+      <!-- Arrow: company signals → review -->
+      <path d="M510 360 L563 300" stroke="#2563eb" stroke-width="1" fill="none" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+
+    </svg>
+  </div>
+
+  <!-- Workflow -->
+  <h2>How it works</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h3>Profile intake</h3>
+        <p>Claude asks for everything in one message: education, experience, projects, skills, target role. Never invents what you don't provide.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h3>Mode selection</h3>
+        <p>Auto-detects mode from your input. Paste a JD → JD-Mirror activates. Paste your resume → Optimize. Ask for a score → Score mode.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h3>JD-Mirror keyword extraction (if JD provided)</h3>
+        <p>Extracts required vs preferred keywords from the job posting. Builds a match report. Injects keywords verbatim into bullets — same spelling, same capitalization as the JD.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h3>Draft generation</h3>
+        <p>Writes resume following strict structure: Header → Education → Experience → Projects → Skills. All bullets follow Action Verb → Task → Quantified Result.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <h3>3-Pass internal review</h3>
+        <p>ATS Gate (keywords, dates, formatting) → Human Voice Check (no AI patterns, varied rhythm, specific details) → Hiring Manager Scan (narrative, top-half impact). Revises and re-runs if anything fails.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-content">
+        <h3>Output</h3>
+        <p>Plain text by default (copy-paste into any ATS portal). Add "give me a .docx" for an ATS-safe Word file with correct formatting.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- The review loop callout -->
+  <div class="callout">
+    <h3>🔄 The 3-Pass Review Loop — what makes this different</h3>
+    <p>Most AI resume tools output on the first pass. This skill runs three internal checks before producing any output:</p>
+    <ul>
+      <li><strong>Pass 1 — ATS Gate:</strong> keywords, date format, section headers, bullet structure, zero fabrication</li>
+      <li><strong>Pass 2 — Human Voice Check:</strong> no passive voice, no identical rhythm, no AI filler words, specific proper nouns</li>
+      <li><strong>Pass 3 — Hiring Manager Scan:</strong> strongest line on page 1, logical narrative arc, skills match bullets</li>
+    </ul>
+    <p style="margin-top:10px">If any check fails → revise → re-run all 3 passes. Only then does output happen.</p>
+  </div>
+
+  <!-- File structure -->
+  <h2>Repo structure</h2>
+  <pre>claude-quant-resume-skill/
+├── README.md                                 ← this file
+├── LICENSE                                   ← Apache 2.0
+├── CONTRIBUTING.md
+└── skills/
+    └── quant-resume-writer/
+        ├── SKILL.md                          ← main 6-step workflow
+        └── references/
+            ├── ats-keywords.md               ← master keyword list by role
+            ├── banned-phrases.md             ← cliché blacklist + rewrites
+            └── company-jd-signals.md         ← per-company ATS platform map</pre>
+
+  <!-- Installation -->
+  <h2>Installation</h2>
+  <h3>Claude.ai (Skills)</h3>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content"><h3>Download the <code>.skill</code> file</h3><p>From the Releases page of this repo.</p></div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content"><h3>Upload to Claude.ai</h3><p>Settings → Skills → Upload Skill → select the file.</p></div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content"><h3>Start a new chat</h3><p>Ask Claude to write or optimize your resume. The skill activates automatically.</p></div>
+    </div>
+  </div>
+
+  <h3 style="margin-top:24px">Claude Code / API</h3>
+  <pre>git clone https://github.com/pooja2420/claude-quant-resume-skill.git</pre>
+  <p style="font-size:13px;color:var(--muted);margin-top:8px">Point Claude at the <code>skills/quant-resume-writer/</code> folder or upload <code>SKILL.md</code> directly via the Skills API.</p>
+
+  <!-- Usage examples -->
+  <h2>Usage examples</h2>
+  <pre><span style="color:#8b949e"># Write from scratch</span>
+"Write me an ATS resume for a quant researcher role at Citadel. Here's my background: ..."
+
+<span style="color:#8b949e"># JD-Mirror mode (highest ATS lift)</span>
+"Here's the Jane Street QR job posting: [paste JD]. Tailor my resume to it: [paste profile]"
+
+<span style="color:#8b949e"># Score existing resume</span>
+"Score my resume against quant ATS standards: [paste resume]"
+
+<span style="color:#8b949e"># Get a .docx file</span>
+"Optimize my resume and give me a .docx file"</pre>
+
+  <!-- Contributing -->
+  <h2>Contributing</h2>
+  <div class="cards">
+    <div class="card">
+      <div class="card-icon">🏦</div>
+      <h3>Company signals</h3>
+      <p>JD patterns for firms not yet covered — hedge funds, quant boutiques, international offices.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🌍</div>
+      <h3>International ATS</h3>
+      <p>EU/UK (Europass), Singapore, Hong Kong, Canada — different ATS platforms and norms.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">📊</div>
+      <h3>New keywords</h3>
+      <p>Emerging quant tools entering job postings — Rust, JAX, Triton, new frameworks.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🧪</div>
+      <h3>Test cases</h3>
+      <p>Sample profiles + JDs + expected output to benchmark skill quality.</p>
+    </div>
+  </div>
+  <p style="font-size:13px;color:var(--muted);margin-top:16px">See <code>CONTRIBUTING.md</code> for ground rules. PRs welcome.</p>
+
+  <hr>
+
+  <p style="font-size:13px;color:var(--muted)">This skill is also contributed to <a href="https://github.com/anthropics/skills" style="color:var(--purple-light)">anthropics/skills</a> — Anthropic's official open-source skills repository.</p>
+
+  <div class="footer">
+    <p>Apache 2.0 · Made by <a href="https://github.com/pooja2420" style="color:var(--purple-light)">pooja2420</a></p>
+  </div>
+
+</div>
+</body>
+</html>
