@@ -1,4 +1,4 @@
-# claude-quant-resume-skill ⚔️📄
+# Claude Quant Resume Optimizer - skill 📄
 
 > 🎯 A fully ATS-optimized, human-sounding resume — projects pulled from your GitHub, experience from LinkedIn, keywords extracted from the JD, and a 3-pass internal review already done.
 >
